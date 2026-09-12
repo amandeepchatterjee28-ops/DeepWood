@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Deepwood Echoes — Prototype</title>
+<link rel="stylesheet" href="deepwood-echoes.css">
+</head>
+<body>
+<div id="wrap">
+
+  <div id="start">
+    <canvas id="startCanvas"></canvas>
+    <div id="startContent">
+      <h1>DEEPWOOD ECHOES</h1>
+      <div class="sub">a 2D survival prototype</div>
+      <div class="rules">
+        Your transport went down over the Deepwood three nights ago. You're alive. Most of the others weren't.
+        Somewhere out here is <b>Mira</b> — a woman who's been surviving this forest far longer than she should
+        have — and she'll tell you what needs doing, one task at a time.<br><br>
+        <b>Hunger</b>, <b>Thirst</b>, <b>Warmth</b> and <b>Sanity</b> decay constantly — let any collapse and your
+        body starts failing. <b>WASD</b> move &nbsp;•&nbsp; <b>E</b> gather/mine/drink &nbsp;•&nbsp;
+        <b>F</b> build or feed a campfire &nbsp;•&nbsp; <b>SPACE</b> fight or hunt the nearest creature &nbsp;•&nbsp;
+        <b>SHIFT</b> sprint &nbsp;•&nbsp; <b>R</b> cook raw meat at a fire &nbsp;•&nbsp; <b>1</b> eat berries &nbsp;•&nbsp;
+        <b>2</b> drink water &nbsp;•&nbsp; <b>3</b> eat raw meat (fills you up, but it's <i>bad for you</i>) &nbsp;•&nbsp;
+        <b>4</b> eat cooked meat &nbsp;•&nbsp;
+        <b>P</b> pause, view skills, and craft weapons. Reach <b>Torchcraft level 2</b> to make a torch with <b>T</b>. Drink from the pond edge without entering the water. Reach <b>Swimming level 3</b> to cross ponds. On mobile, drag controls, maps, and dialogs with two fingers.<br><br>
+        Chop wood, forage, mine <b>stone, iron and copper</b>, and fight to train four <b>skills</b> — they raise
+        your yields, cut your fuel costs, and unlock better weapons. Wolves hunt in packs; <b>tigers</b> and
+        <b>bears</b> start showing up after the first few nights. Rabbits and deer can be hunted for raw meat —
+        cook it at a fire before eating or it'll cost you. Your fire is what keeps predators off you — if it dies
+        (and heavy rain <i>will</i> put it out) they will close in. Rain also chills you when you are away from a fire.<br><br>
+        Complete everything Mira asks of you before the sixth dawn and you'll get your signal out. Fail to, and
+        even if your body is still standing, you don't make it home.
+      </div>
+
+      <div id="modeSelect">
+        <button class="modeBtn" id="modeDesktop" data-mode="desktop">🖥 Desktop (keyboard)</button>
+        <button class="modeBtn" id="modeMobile" data-mode="mobile">📱 Mobile (touch)</button>
+      </div>
+      <div id="mobileTip" class="hidden">
+        <b>📱 Mobile tip:</b> During play, <b>use two fingers</b> to drag the joystick zone, action buttons, minimap, mission box, and dialogs anywhere on screen — reposition them to fit your hands.
+      </div>
+
+      <div id="difficultySelect" aria-label="Difficulty">
+        <span class="difficultyLabel">Difficulty</span>
+        <button class="difficultyBtn" data-difficulty="easy">Easy</button>
+        <button class="difficultyBtn active" data-difficulty="normal">Normal</button>
+        <button class="difficultyBtn" data-difficulty="hard">Hard</button>
+      </div>
+
+      <button id="startBtn">Enter the Forest</button>
+    </div>
+    <div id="copyright">© Amandeep Chatterjee 2026 · All rights reserved</div>
+  </div>
+
+  <canvas id="game"></canvas>
+
+  <div id="mobileControls">
+    <div id="joystickZone">
+      <div id="joystickBase"><div id="joystickKnob"></div></div>
+    </div>
+    <button id="btnPauseMobile">II</button>
+    <div id="mobileActions">
+      <button id="btnSprint">SPRINT</button>
+      <div class="eatRow">
+        <button class="mbtn tiny" id="btnEat1" title="Eat berries">🍓</button>
+        <button class="mbtn tiny" id="btnEat2" title="Drink water">💧</button>
+        <button class="mbtn tiny" id="btnEat3" title="Eat raw meat">🥩</button>
+        <button class="mbtn tiny" id="btnEat4" title="Eat cooked meat">🍖</button>
+      </div>
+      <div class="eatRow">
+        <button class="mbtn" id="btnFire">FIRE</button>
+        <button class="mbtn" id="btnCook">COOK</button>
+        <button class="mbtn" id="btnTorch">TORCH</button>
+      </div>
+      <div class="eatRow">
+        <button class="mbtn big" id="btnGather">GATHER</button>
+        <button class="mbtn big" id="btnFight">FIGHT</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="hud" style="display:none;">
+    <div id="stats">
+      <div id="statsTopRow" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+        <button id="statsToggle" style="pointer-events:auto;background:none;border:1px solid var(--panel-line);color:var(--ember-lt);font-size:10px;padding:2px 8px;cursor:pointer;letter-spacing:1px;font-family:'JetBrains Mono',monospace;font-weight:700;">+ MORE</button>
+        <button id="muteBtn" style="pointer-events:auto;background:none;border:1px solid var(--panel-line);color:var(--parchment);font-size:10px;padding:2px 8px;cursor:pointer;letter-spacing:1px;">SOUND: ON</button>
+      </div>
+      <div class="stat-row"><span class="stat-label">Health</span><div class="bar-bg"><div class="bar-fill" id="bar-health" style="background:#a3372e;width:100%"></div></div><span class="stat-num" id="n-health">100</span></div>
+      <div class="stat-row"><span class="stat-label">Hunger</span><div class="bar-bg"><div class="bar-fill" id="bar-hunger" style="background:#c98a35;width:100%"></div></div><span class="stat-num" id="n-hunger">100</span></div>
+      <div class="stat-row"><span class="stat-label">Thirst</span><div class="bar-bg"><div class="bar-fill" id="bar-thirst" style="background:#3f7fa0;width:100%"></div></div><span class="stat-num" id="n-thirst">100</span></div>
+      <div id="extraStats">
+        <div class="stat-row"><span class="stat-label">Warmth</span><div class="bar-bg"><div class="bar-fill" id="bar-warmth" style="background:#c96a35;width:100%"></div></div><span class="stat-num" id="n-warmth">100</span></div>
+        <div class="stat-row"><span class="stat-label">Sanity</span><div class="bar-bg"><div class="bar-fill" id="bar-sanity" style="background:#7b5ea3;width:100%"></div></div><span class="stat-num" id="n-sanity">100</span></div>
+        <div class="stat-row"><span class="stat-label">Stamina</span><div class="bar-bg"><div class="bar-fill" id="bar-stamina" style="background:#4a5c3e;width:100%"></div></div><span class="stat-num" id="n-stamina">100</span></div>
+        <div class="stat-row fire-stat"><span class="stat-label">Fire brightness</span><div class="bar-bg"><div class="bar-fill" id="bar-fireBrightness" style="background:#f09a3e;width:0%"></div></div><span class="stat-num" id="n-fireBrightness">0</span></div>
+        <div class="stat-row fire-stat"><span class="stat-label">Torch brightness</span><div class="bar-bg"><div class="bar-fill" id="bar-torchBrightness" style="background:#ffd36a;width:0%"></div></div><span class="stat-num" id="n-torchBrightness">0</span></div>
+      </div>
+    </div>
+
+    <div id="topRight">
+      <div id="dayBox"><div class="day" id="dayNum">Day 1</div><div id="timeOfDay">dawn</div></div>
+      <div id="inv">
+        <div class="invItem"><span class="invIcon" style="background:#6b4a2c;"></span><span id="i-wood">0</span> wood</div>
+        <div class="invItem"><span class="invIcon" style="background:#8a3c3c;"></span><span id="i-berry">0</span> berries</div>
+        <div class="invItem"><span class="invIcon" style="background:#3f7fa0;"></span><span id="i-water">0</span> water</div>
+        <div class="invItem"><span class="invIcon" style="background:#8a867a;"></span><span id="i-stone">0</span> stone</div>
+        <div class="invItem"><span class="invIcon" style="background:#8fa3ad;"></span><span id="i-iron">0</span> iron</div>
+        <div class="invItem"><span class="invIcon" style="background:#c97a3f;"></span><span id="i-copper">0</span> copper</div>
+        <div class="invItem"><span class="invIcon" style="background:#a85c4a;"></span><span id="i-rawmeat">0</span> raw meat</div>
+        <div class="invItem"><span class="invIcon" style="background:#7a5236;"></span><span id="i-cookedmeat">0</span> cooked</div>
+        <div class="invItem"><span class="invIcon" style="background:#c96a35;"></span><span id="i-weapon">Fists</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="action"></div>
+  <div id="bottomLeft" style="display:none;">
+    <div id="minimapBox">
+      <div class="mm-title">Deepwood — map</div>
+      <canvas id="minimap" width="150" height="150"></canvas>
+    </div>
+    <div id="missionBox"><span class="mm-who">MIRA</span><br><span id="missionText">—</span></div>
+    <div id="hints">
+      <b>WASD</b> move &nbsp; <b>E</b> gather/mine/drink &nbsp; <b>F</b> campfire<br>
+      <b>SPACE</b> fight/hunt &nbsp; <b>SHIFT</b> sprint &nbsp; <b>R</b> cook meat &nbsp; <b>T</b> torch<br>
+      <b>1</b> eat berries &nbsp; <b>2</b> drink water &nbsp; <b>3</b> eat raw &nbsp; <b>4</b> eat cooked<br>
+      <b>P</b> pause / skills / craft &nbsp; <b>Rain</b> chills you and can put out fires
+    </div>
+  </div>
+  <div id="log"></div>
+
+  <div id="pauseScreen">
+    <div id="pausePanel">
+      <h1 class="title-font">Paused</h1>
+      <div class="pausesub">skills · crafting · mira's tasks</div>
+      <div id="skillList"></div>
+      <div class="craft-section">
+        <div class="skill-head" style="margin-bottom:8px;"><span>Weapons</span><span style="opacity:.6;">equipped: <span id="curWeapon">Fists</span></span></div>
+        <div id="craftList"></div>
+      </div>
+      <div class="craft-section">
+        <div class="skill-head" style="margin-bottom:8px;"><span>Mira's Tasks</span><span style="opacity:.6;" id="missionProgress">0/7</span></div>
+        <div id="missionList"></div>
+      </div>
+      <button id="pauseResume">Resume (P)</button>
+    </div>
+  </div>
+
+  <div id="endScreen">
+    <h1 id="endTitle" class="title-font">You Perished</h1>
+    <p id="endText"></p>
+    <button onclick="location.reload()">Try Again</button>
+  </div>
+
+</div>
+
+<script src="deepwood-echoes.js"></script>
+</body>
+</html>
